@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.Robot;
+import frc.robot.Robot;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

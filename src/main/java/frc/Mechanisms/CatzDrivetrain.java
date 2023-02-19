@@ -3,9 +3,9 @@ package frc.Mechanisms;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.Robot;
 import frc.DataLogger.CatzLog;
 import frc.DataLogger.DataCollection;
+import frc.robot.Robot;
 
 public class CatzDrivetrain 
 {
