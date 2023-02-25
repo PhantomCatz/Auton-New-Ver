@@ -10,7 +10,7 @@ import frc.robot.Robot;
 public class CatzDrivetrain 
 {
     //Singleton Instance
-    private static final CatzDrivetrain INSTANCE = new CatzDrivetrain();
+    private static final CatzDrivetrain driveTrainInstance = new CatzDrivetrain();
 
     private enum FrontSide{
         FRONT("Front"),
@@ -104,7 +104,6 @@ public class CatzDrivetrain
     }
 
     public void setOneModuleDrivePower(int i, double pwr){
-        
         swerveModules[i].setDrivePower(pwr);
     }
 
@@ -252,8 +251,8 @@ public class CatzDrivetrain
         RT_BACK_MODULE.updateShuffleboard();
     }
 
-    public static CatzDrivetrain getInstance(){
-        return INSTANCE;
+    public static CatzDrivetrain getDrivetraininstance(){
+        return driveTrainInstance;
     }
 
     public void dataCollection(){

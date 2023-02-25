@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import org.apache.commons.math3.optimization.DifferentiableMultivariateMultiStartOptimizer;
+
 import com.dacubeking.AutoBuilder.robot.robotinterface.AutonomousContainer;
 import com.dacubeking.AutoBuilder.robot.robotinterface.CommandTranslator;
 
@@ -42,17 +44,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-
       xboxDrv = new XboxController(0);
-      driveTrain = CatzDrivetrain.getInstance();
+      driveTrain = CatzDrivetrain.getDrivetraininstance();
 
       dataCollection = new DataCollection();
       dataArrayList = new ArrayList<CatzLog>();
       dataCollection.dataCollectionInit(dataArrayList);
 
       currentTime = new Timer();
-      final CatzAutonomous drive = CatzAutonomous.getInstance();
-      final CatzRobotTracker robotTracker = CatzRobotTracker.getInstance();
+      final CatzAutonomous drive = CatzAutonomous.getAutonomousinstance();
+      final CatzRobotTracker robotTracker = CatzRobotTracker.getRobottrackerinstance();
+      
 
       robotTracker.resetPosition(new Pose2d());
       
@@ -66,11 +68,11 @@ public class Robot extends TimedRobot {
                         drive::getAutoElapsedTime,
                         robotTracker::resetPosition,
                         true
-
                 ),
                 false,
                 this
         );
+
       AutonomousContainer.getInstance().getAutonomousNames().forEach(name -> autoChooser.addOption(name, name));
 
       sideChooser.setDefaultOption("Blue", "blue");
@@ -84,7 +86,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic()
   {
     driveTrain.updateShuffleboard();
-    CatzAutonomous.getInstance().updateShuffleboard();
+    CatzAutonomous.getAutonomousinstance().updateShuffleboard();
     
     //SmartDashboard.putNumber("NavX", navX.getAngle());
     //drivetrain.testAngle();
@@ -193,8 +195,8 @@ public class Robot extends TimedRobot {
   }
 
   private void startThread(){
-    CatzRobotTracker.getInstance().start();
-    CatzAutonomous.getInstance().start();
+    CatzRobotTracker.getRobottrackerinstance().start();
+    CatzAutonomous.getAutonomousinstance().start();
   }
 
   public static DataCollection getDataCollection(){

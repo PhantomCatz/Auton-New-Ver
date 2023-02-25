@@ -15,7 +15,7 @@ public class DriveStraightPathGenerator {
     private final TrajectoryConfig config;
     private Trajectory trajectory;
 
-    private final double trackWidthMeters = 0;
+    private final double trackWidthMeters = 0.5;
     private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(trackWidthMeters);
 
     public DriveStraightPathGenerator(int distanceToTravel){

@@ -20,12 +20,12 @@ import frc.Utils.CatzMathUtils;
 
 public class CatzAutonomous extends ThreadRunner{
     //Singleton Instance
-    private static final CatzAutonomous INSTANCE = new CatzAutonomous();
+    private static final CatzAutonomous autonomousInstance = new CatzAutonomous();
 
 
-    private final CatzDrivetrain driveTrain = CatzDrivetrain.getInstance();
+    private final CatzDrivetrain driveTrain = CatzDrivetrain.getDrivetraininstance();
 
-    private final HolonomicDriveController HOLOMONIC_DRIVE_CONTROLLER;
+    private final HolonomicDriveController holonomicDriveController;
 
     private static final SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(
         CatzConstants.SWERVE_LEFT_FRONT_LOCATION,
@@ -42,8 +42,8 @@ public class CatzAutonomous extends ThreadRunner{
 
     private boolean isDone = false;
 
-    public static CatzAutonomous getInstance(){
-        return INSTANCE;
+    public static CatzAutonomous getAutonomousinstance(){
+        return autonomousInstance;
     }
 
     public static SwerveDriveKinematics getSwervedrivekinematics(){
@@ -58,7 +58,7 @@ public class CatzAutonomous extends ThreadRunner{
             autoTurnPIDController.enableContinuousInput(-Math.PI, Math.PI);
             autoTurnPIDController.setTolerance(Math.toRadians(10));
 
-        HOLOMONIC_DRIVE_CONTROLLER = new HolonomicDriveController(
+        holonomicDriveController = new HolonomicDriveController(
             new PIDController(0.2, 0,0),
             new PIDController(0.2, 0, 0),
             autoTurnPIDController
@@ -93,20 +93,24 @@ public class CatzAutonomous extends ThreadRunner{
 
     private void runAuto(){
 
-        if(currentTrajectory == null) return;
+        try{
 
-        Pose2d currentPos = CatzRobotTracker.getInstance().getCurrentPos();
-        Trajectory.State goal = currentTrajectory.sample(Timer.getFPGATimestamp() - autoStartTime);
-        ChassisSpeeds adjustedSpeed = HOLOMONIC_DRIVE_CONTROLLER.calculate(currentPos, goal, targetRotation);
+            Pose2d currentPos = CatzRobotTracker.getRobottrackerinstance().getCurrentPose();
+            Trajectory.State goal = currentTrajectory.sample(Timer.getFPGATimestamp() - autoStartTime);
+            ChassisSpeeds adjustedSpeed = holonomicDriveController.calculate(currentPos, goal, targetRotation);
 
-        SwerveModuleState[] swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(adjustedSpeed);
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND);
+            SwerveModuleState[] swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(adjustedSpeed);
+            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND);
 
-        setSwerveModule(swerveModuleStates);
+            setSwerveModule(swerveModuleStates);
 
-        if(HOLOMONIC_DRIVE_CONTROLLER.atReference() && (Timer.getFPGATimestamp() - autoStartTime) >= currentTrajectory.getTotalTimeSeconds()){
-            //Checking if the robot has reached the destination and if the current time has reached the predicted finishing time.
-            isDone = true;
+            if((holonomicDriveController.atReference()) && ((Timer.getFPGATimestamp() - autoStartTime) >= currentTrajectory.getTotalTimeSeconds())){
+                //Checking if the robot has reached the destination and if the current time has reached the predicted finishing time.
+                isDone = true;
+            }
+
+        }catch(NullPointerException e){
+            System.out.println("Trajectory is null");
         }
     }
 
