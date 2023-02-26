@@ -14,8 +14,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.Mechanisms.CatzDrivetrain;
-import frc.Utils.CatzConstants;
 import frc.Utils.CatzMathUtils;
+import frc.robot.CatzConstants;
 
 
 public class CatzAutonomous extends ThreadRunner{
