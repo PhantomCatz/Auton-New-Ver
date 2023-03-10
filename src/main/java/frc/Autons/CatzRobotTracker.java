@@ -79,8 +79,4 @@ public class CatzRobotTracker extends ThreadRunner{
             distanceMoved, new Rotation2d(Math.toRadians(module.getAngle()))
         );
     }
-    @Override
-    public void close() throws Exception {}
-    @Override
-    public void selfTest() {}
 }

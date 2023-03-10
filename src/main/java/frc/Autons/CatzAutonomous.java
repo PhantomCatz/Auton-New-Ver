@@ -88,30 +88,23 @@ public class CatzAutonomous extends ThreadRunner{
     public double getAutoElapsedTime() {
         return Timer.getFPGATimestamp() - autoStartTime;
     }
-    //Methods used in the CommandTranslator ends here. ******************************
+    //Methods used in the CommandTranslator ends here. --------------------------------
 
 
     private void runAuto(){
+        Pose2d currentPos = CatzRobotTracker.getRobottrackerinstance().getCurrentPose();
+        Trajectory.State goal = currentTrajectory.sample(Timer.getFPGATimestamp() - autoStartTime);
+        ChassisSpeeds adjustedSpeed = holonomicDriveController.calculate(currentPos, goal, targetRotation);          SwerveModuleState[] swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(adjustedSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND);
 
-        try{
+        setSwerveModule(swerveModuleStates);
 
-            Pose2d currentPos = CatzRobotTracker.getRobottrackerinstance().getCurrentPose();
-            Trajectory.State goal = currentTrajectory.sample(Timer.getFPGATimestamp() - autoStartTime);
-            ChassisSpeeds adjustedSpeed = holonomicDriveController.calculate(currentPos, goal, targetRotation);
-
-            SwerveModuleState[] swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(adjustedSpeed);
-            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND);
-
-            setSwerveModule(swerveModuleStates);
-
-            if((holonomicDriveController.atReference()) && ((Timer.getFPGATimestamp() - autoStartTime) >= currentTrajectory.getTotalTimeSeconds())){
-                //Checking if the robot has reached the destination and if the current time has reached the predicted finishing time.
-                isDone = true;
-            }
-
-        }catch(NullPointerException e){
-            System.out.println("Trajectory is null");
+        //Checking if the robot has reached the destination and if the current time has reached the predicted finishing time.
+        if((holonomicDriveController.atReference()) && ((Timer.getFPGATimestamp() - autoStartTime) >= currentTrajectory.getTotalTimeSeconds())){
+            isDone = true;
         }
+
+        
     }
 
     private void setSwerveModule(SwerveModuleState[] moduleStates){
@@ -139,10 +132,4 @@ public class CatzAutonomous extends ThreadRunner{
             runAuto();
         }
     }
-
-    @Override
-    public void close() throws Exception {}
-
-    @Override
-    public void selfTest() {}
 }
