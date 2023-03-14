@@ -6,13 +6,10 @@ package frc.robot;
 
 import java.util.ArrayList;
 
-import org.apache.commons.math3.optimization.DifferentiableMultivariateMultiStartOptimizer;
-
 import com.dacubeking.AutoBuilder.robot.robotinterface.AutonomousContainer;
 import com.dacubeking.AutoBuilder.robot.robotinterface.CommandTranslator;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -41,20 +38,21 @@ public class Robot extends TimedRobot {
   private static Timer currentTime;
   private ArrayList<CatzLog> dataArrayList;
   
+  private final int XBOX_DRV_PORT = 0;
+
+  private final CatzAutonomous drive = CatzAutonomous.getAutonomousinstance();
+  private final CatzRobotTracker robotTracker = CatzRobotTracker.getRobotTrackerInstance();
 
   @Override
   public void robotInit() {
-      xboxDrv = new XboxController(0);
-      driveTrain = CatzDrivetrain.getDrivetraininstance();
+      xboxDrv = new XboxController(XBOX_DRV_PORT);
+      driveTrain = CatzDrivetrain.getDrivetrainInstance();
 
       dataCollection = new DataCollection();
       dataArrayList = new ArrayList<CatzLog>();
       dataCollection.dataCollectionInit(dataArrayList);
 
       currentTime = new Timer();
-      final CatzAutonomous drive = CatzAutonomous.getAutonomousinstance();
-      final CatzRobotTracker robotTracker = CatzRobotTracker.getRobottrackerinstance();
-      
 
       robotTracker.resetPosition(new Pose2d());
       
@@ -140,11 +138,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    // driveTrain.initializeOffsets();
-
-    // DriveStraightPathGenerator path = new DriveStraightPathGenerator(3);
-    // CatzAutonomous.getInstance().setAutoPath(path.getTrajectory());
-    // CatzAutonomous.getInstance().setAutoRotation(new Rotation2d(0));
     startThread();
 
     currentTime.reset();
@@ -153,11 +146,6 @@ public class Robot extends TimedRobot {
     dataCollection.setLogDataID(dataCollection.LOG_ID_SWERVE_MODULE);
     dataCollection.startDataCollection();
     String autoName = autoChooser.getSelected();
-    
-    
-    if(autoName == null){
-      System.out.println("nooooo :(((");
-    }
 
     AutonomousContainer.getInstance().runAutonomous(autoName, sideChooser.getSelected(), true);
   }
@@ -195,7 +183,7 @@ public class Robot extends TimedRobot {
   }
 
   private void startThread(){
-    CatzRobotTracker.getRobottrackerinstance().start();
+    CatzRobotTracker.getRobotTrackerInstance().start();
     CatzAutonomous.getAutonomousinstance().start();
   }
 

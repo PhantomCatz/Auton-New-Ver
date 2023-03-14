@@ -251,7 +251,7 @@ public class CatzDrivetrain
         RT_BACK_MODULE.updateShuffleboard();
     }
 
-    public static CatzDrivetrain getDrivetraininstance(){
+    public static CatzDrivetrain getDrivetrainInstance(){
         return driveTrainInstance;
     }
 

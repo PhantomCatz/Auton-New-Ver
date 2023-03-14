@@ -23,7 +23,7 @@ public class CatzAutonomous extends ThreadRunner{
     private static final CatzAutonomous autonomousInstance = new CatzAutonomous();
 
 
-    private final CatzDrivetrain driveTrain = CatzDrivetrain.getDrivetraininstance();
+    private final CatzDrivetrain driveTrain = CatzDrivetrain.getDrivetrainInstance();
 
     private final HolonomicDriveController holonomicDriveController;
 
@@ -61,7 +61,7 @@ public class CatzAutonomous extends ThreadRunner{
         
     }
 
-    //Methods used in the CommandTranslator starts here. ******************************
+    //Methods used in the CommandTranslator starts here. --------------------------------
     public void setAutoPath(Trajectory trajectory) {
         this.currentTrajectory = trajectory;
         autoStartTime = Timer.getFPGATimestamp();
@@ -86,9 +86,12 @@ public class CatzAutonomous extends ThreadRunner{
 
 
     private void runAuto(){
-        Pose2d currentPos = CatzRobotTracker.getRobottrackerinstance().getCurrentPose();
+        Pose2d currentPos = CatzRobotTracker.getRobotTrackerInstance().getCurrentPose();
+
         Trajectory.State goal = currentTrajectory.sample(Timer.getFPGATimestamp() - autoStartTime);
-        ChassisSpeeds adjustedSpeed = holonomicDriveController.calculate(currentPos, goal, targetRotation);          SwerveModuleState[] swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(adjustedSpeed);
+        ChassisSpeeds adjustedSpeed = holonomicDriveController.calculate(currentPos, goal, targetRotation); 
+
+        SwerveModuleState[] swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(adjustedSpeed);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND);
 
         setSwerveModule(swerveModuleStates);

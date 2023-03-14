@@ -16,7 +16,7 @@ public class CatzRobotTracker extends ThreadRunner{
     //Singleton Instance
     private static final CatzRobotTracker robotTrackerInstance = new CatzRobotTracker();
 
-    private final CatzDrivetrain driveTrain = CatzDrivetrain.getDrivetraininstance();
+    private final CatzDrivetrain driveTrain = CatzDrivetrain.getDrivetrainInstance();
 
     private Pose2d currentPose;
     private SwerveDriveOdometry swerveOdometry;
@@ -39,7 +39,7 @@ public class CatzRobotTracker extends ThreadRunner{
     }
 
 
-    public static CatzRobotTracker getRobottrackerinstance(){
+    public static CatzRobotTracker getRobotTrackerInstance(){
         return robotTrackerInstance;
     }
 
