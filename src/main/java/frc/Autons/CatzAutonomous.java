@@ -36,22 +36,16 @@ public class CatzAutonomous extends ThreadRunner{
 
 
     private Trajectory currentTrajectory;
-    private volatile Rotation2d targetRotation;
+    private Rotation2d targetRotation;
 
     private double autoStartTime;
 
     private boolean isDone = false;
 
-    public static CatzAutonomous getAutonomousinstance(){
-        return autonomousInstance;
-    }
-
-    public static SwerveDriveKinematics getSwervedrivekinematics(){
-        return swerveDriveKinematics;
-    }
+    private static int TRAJECTORY_FOLLOWER_THREAD_PERIOD_MS = 20;
 
     private CatzAutonomous(){
-        super(100);
+        super(TRAJECTORY_FOLLOWER_THREAD_PERIOD_MS);
 
         ProfiledPIDController autoTurnPIDController
             = new ProfiledPIDController(8, 0, 0.01, new TrapezoidProfile.Constraints(4, 4));
@@ -119,8 +113,13 @@ public class CatzAutonomous extends ThreadRunner{
         }
     }
 
-    public void updateShuffleboard(){
-        SmartDashboard.putBoolean("Is Done", isDone);
+
+    public static CatzAutonomous getAutonomousinstance(){
+        return autonomousInstance;
+    }
+
+    public static SwerveDriveKinematics getSwervedrivekinematics(){
+        return swerveDriveKinematics;
     }
 
     @Override
@@ -131,5 +130,9 @@ public class CatzAutonomous extends ThreadRunner{
         else{
             runAuto();
         }
+    }
+
+    public void updateShuffleboard(){
+        SmartDashboard.putBoolean("Is Done", isDone);
     }
 }

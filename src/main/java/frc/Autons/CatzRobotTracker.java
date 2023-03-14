@@ -21,8 +21,10 @@ public class CatzRobotTracker extends ThreadRunner{
     private Pose2d currentPose;
     private SwerveDriveOdometry swerveOdometry;
 
+    private static int ROBOT_TRACKER_THREAD_PERIOD_MS = 20;
+
     private CatzRobotTracker() {
-        super(20);
+        super(ROBOT_TRACKER_THREAD_PERIOD_MS);
 
 
         //Initializing robot position

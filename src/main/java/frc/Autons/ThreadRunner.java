@@ -1,7 +1,5 @@
 package frc.Autons;
 
-import edu.wpi.first.wpilibj.Timer;
-
 public abstract class ThreadRunner implements Runnable {
     private final int delay;
     private Thread thread;
@@ -23,7 +21,12 @@ public abstract class ThreadRunner implements Runnable {
     public void run() {
         while(true){
             update();
-            Timer.delay(delay);
+            try{
+                Thread.sleep(delay);
+            }catch(InterruptedException e){
+                System.out.println("Interrupted");
+                e.printStackTrace();
+            }
         }
     }
 }
