@@ -24,8 +24,7 @@ public abstract class ThreadRunner implements Runnable {
             try{
                 Thread.sleep(delay);
             }catch(InterruptedException e){
-                System.out.println("Interrupted");
-                e.printStackTrace();
+                System.out.println("Interrupted: " + e.getMessage());
             }
         }
     }

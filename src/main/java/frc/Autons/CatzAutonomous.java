@@ -14,7 +14,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.Mechanisms.CatzDrivetrain;
-import frc.Utils.CatzMathUtils;
 import frc.robot.CatzConstants;
 
 
@@ -86,6 +85,8 @@ public class CatzAutonomous extends ThreadRunner{
 
 
     private void runAuto(){
+        if(currentTrajectory == null || targetRotation == null) System.out.println("Trajectory or target rotation is null");
+
         Pose2d currentPos = CatzRobotTracker.getRobotTrackerInstance().getCurrentPose();
 
         Trajectory.State goal = currentTrajectory.sample(Timer.getFPGATimestamp() - autoStartTime);
@@ -109,7 +110,7 @@ public class CatzAutonomous extends ThreadRunner{
             SwerveModuleState moduleState = moduleStates[module];
 
             double targetAngle = moduleState.angle.getDegrees() % 360.0;
-            double speed = CatzMathUtils.clamp(-CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND,CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND,moduleState.speedMetersPerSecond) / CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND;
+            double speed = moduleState.speedMetersPerSecond; //already converted to range of -1.0 to 1.0 with SwerveDriveKinematics.desaturateWheelSpeeds();
             
             driveTrain.setOneModuleDrivePower(module, speed);
             driveTrain.setOneModuleWheelRotation(module, targetAngle);
@@ -117,14 +118,11 @@ public class CatzAutonomous extends ThreadRunner{
     }
 
 
-    public static CatzAutonomous getAutonomousinstance(){
-        return autonomousInstance;
-    }
-
+    
     public static SwerveDriveKinematics getSwervedrivekinematics(){
         return swerveDriveKinematics;
     }
-
+    
     @Override
     public void update(){
         if(isDone){
@@ -133,6 +131,10 @@ public class CatzAutonomous extends ThreadRunner{
         else{
             runAuto();
         }
+    }
+
+    public static CatzAutonomous getAutonomousinstance(){
+        return autonomousInstance;
     }
 
     public void updateShuffleboard(){
