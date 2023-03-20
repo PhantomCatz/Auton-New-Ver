@@ -23,6 +23,7 @@ import frc.Utils.CatzMathUtils;
 
 import frc.DataLogger.*;
 
+@SuppressWarnings("unused")
 public class Robot extends TimedRobot {
   private final SendableChooser<String> autoChooser = new SendableChooser<>();
   private final SendableChooser<String> sideChooser = new SendableChooser<>();

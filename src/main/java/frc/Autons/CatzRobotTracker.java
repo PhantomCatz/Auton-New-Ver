@@ -11,7 +11,7 @@ import edu.wpi.first.math.util.Units;
 import frc.Mechanisms.CatzDrivetrain;
 import frc.Mechanisms.CatzSwerveModule;
 
-public class CatzRobotTracker extends ThreadRunner{
+public class CatzRobotTracker extends AbstractMechanism{
 
     //Singleton Instance
     private static final CatzRobotTracker robotTrackerInstance = new CatzRobotTracker();
@@ -80,5 +80,17 @@ public class CatzRobotTracker extends ThreadRunner{
         return new SwerveModulePosition(
             distanceMoved, new Rotation2d(Math.toRadians(module.getAngle()))
         );
+    }
+
+
+    @Override
+    public void smartDashboard() {
+        
+    }
+
+
+    @Override
+    public void smartDashboard_DEBUG() {
+        
     }
 }

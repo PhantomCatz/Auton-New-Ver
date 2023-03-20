@@ -17,7 +17,7 @@ import frc.Mechanisms.CatzDrivetrain;
 import frc.robot.CatzConstants;
 
 
-public class CatzAutonomous extends ThreadRunner{
+public class CatzAutonomous extends AbstractMechanism{
     //Singleton Instance
     private static final CatzAutonomous autonomousInstance = new CatzAutonomous();
 
@@ -63,6 +63,7 @@ public class CatzAutonomous extends ThreadRunner{
     //Methods used in the CommandTranslator starts here. --------------------------------
     public void setAutoPath(Trajectory trajectory) {
         this.currentTrajectory = trajectory;
+        
         autoStartTime = Timer.getFPGATimestamp();
     }
 
@@ -85,6 +86,7 @@ public class CatzAutonomous extends ThreadRunner{
 
 
     private void runAuto(){
+
         if(currentTrajectory == null || targetRotation == null) System.out.println("Trajectory or target rotation is null");
 
         Pose2d currentPos = CatzRobotTracker.getRobotTrackerInstance().getCurrentPose();
@@ -139,5 +141,17 @@ public class CatzAutonomous extends ThreadRunner{
 
     public void updateShuffleboard(){
         SmartDashboard.putBoolean("Is Done", isDone);
+    }
+
+    @Override
+    public void smartDashboard() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void smartDashboard_DEBUG() {
+        // TODO Auto-generated method stub
+        
     }
 }
