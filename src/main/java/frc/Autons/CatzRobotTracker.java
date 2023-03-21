@@ -18,7 +18,7 @@ public class CatzRobotTracker extends AbstractMechanism{
 
     private final CatzDrivetrain driveTrain = CatzDrivetrain.getDrivetrainInstance();
 
-    private Pose2d currentPose;
+    private Pose2d currentEstimatedPose;
     private SwerveDriveOdometry swerveOdometry;
 
     private static int ROBOT_TRACKER_THREAD_PERIOD_MS = 20;
@@ -53,8 +53,8 @@ public class CatzRobotTracker extends AbstractMechanism{
         }, pose);
     }
 
-    public Pose2d getCurrentPose() {
-        return currentPose;
+    public Pose2d getCurrentEstimatedPose() {
+        return currentEstimatedPose;
     }
 
     private void updateRobotPosition(){
@@ -65,13 +65,13 @@ public class CatzRobotTracker extends AbstractMechanism{
             getModulePosition(driveTrain.RT_BACK_MODULE)
         });
         
-        currentPose = swerveOdometry.getPoseMeters();
+        currentEstimatedPose = swerveOdometry.getPoseMeters();
     }
 
     @Override
     public void update() {
         updateRobotPosition();
-        RobotPositionSender.addRobotPosition(new RobotState(currentPose));
+        RobotPositionSender.addRobotPosition(new RobotState(currentEstimatedPose));
     }
     
     private SwerveModulePosition getModulePosition(CatzSwerveModule module){

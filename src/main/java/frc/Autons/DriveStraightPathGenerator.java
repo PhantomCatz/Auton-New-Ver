@@ -19,7 +19,7 @@ public class DriveStraightPathGenerator {
     private final DifferentialDriveKinematics kinematics = new DifferentialDriveKinematics(trackWidthMeters);
 
     public DriveStraightPathGenerator(int distanceToTravel){
-        config = new TrajectoryConfig(2, 1).setKinematics(kinematics);
+        config = new TrajectoryConfig(2, 2).setKinematics(kinematics);
         trajectory = TrajectoryGenerator.generateTrajectory(
             
             new Pose2d(0, 0, new Rotation2d(0)),

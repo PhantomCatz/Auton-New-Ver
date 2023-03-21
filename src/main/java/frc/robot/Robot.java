@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import com.dacubeking.AutoBuilder.robot.reflection.ClassInformationSender;
 import com.dacubeking.AutoBuilder.robot.robotinterface.AutonomousContainer;
 import com.dacubeking.AutoBuilder.robot.robotinterface.CommandTranslator;
 
@@ -46,8 +47,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-      xboxDrv = new XboxController(XBOX_DRV_PORT);
       driveTrain = CatzDrivetrain.getDrivetrainInstance();
+      xboxDrv = new XboxController(XBOX_DRV_PORT);
 
       dataCollection = new DataCollection();
       dataArrayList = new ArrayList<CatzLog>();
@@ -85,6 +86,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic()
   {
     driveTrain.updateShuffleboard();
+
     CatzAutonomous.getAutonomousinstance().updateShuffleboard();
     
     //SmartDashboard.putNumber("NavX", navX.getAngle());
@@ -181,6 +183,11 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit(){
     driveTrain.initializeOffsets();
+  }
+
+  @Override
+  public void simulationInit(){
+    ClassInformationSender.updateReflectionInformation("frc");
   }
 
   private void startThread(){

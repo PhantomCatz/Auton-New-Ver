@@ -43,6 +43,12 @@ public class CatzAutonomous extends AbstractMechanism{
 
     private static int TRAJECTORY_FOLLOWER_THREAD_PERIOD_MS = 20;
 
+    private double targetSpeed           = 0.0;
+    private double targetAngle           = 0.0;
+    private double vxMetersPerSecond     = 0.0;
+    private double vyMetersPerSecond     = 0.0;
+    private double omegaRadiansPerSecond = 0.0;
+
     private CatzAutonomous(){
         super(TRAJECTORY_FOLLOWER_THREAD_PERIOD_MS);
 
@@ -89,15 +95,19 @@ public class CatzAutonomous extends AbstractMechanism{
 
         if(currentTrajectory == null || targetRotation == null) System.out.println("Trajectory or target rotation is null");
 
-        Pose2d currentPos = CatzRobotTracker.getRobotTrackerInstance().getCurrentPose();
+        Pose2d currentPos = CatzRobotTracker.getRobotTrackerInstance().getCurrentEstimatedPose();
 
         Trajectory.State goal = currentTrajectory.sample(Timer.getFPGATimestamp() - autoStartTime);
         ChassisSpeeds adjustedSpeed = holonomicDriveController.calculate(currentPos, goal, targetRotation); 
 
+        vxMetersPerSecond     = adjustedSpeed.vxMetersPerSecond;
+        vyMetersPerSecond     = adjustedSpeed.vyMetersPerSecond;
+        omegaRadiansPerSecond = adjustedSpeed.omegaRadiansPerSecond;
+
         SwerveModuleState[] swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(adjustedSpeed);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND);
 
-        setSwerveModule(swerveModuleStates);
+        setSwerveModuleState(swerveModuleStates);
 
         //Checking if the robot has reached the destination and if the current time has reached the predicted finishing time.
         if((holonomicDriveController.atReference()) && ((Timer.getFPGATimestamp() - autoStartTime) >= currentTrajectory.getTotalTimeSeconds())){
@@ -107,14 +117,14 @@ public class CatzAutonomous extends AbstractMechanism{
         
     }
 
-    private void setSwerveModule(SwerveModuleState[] moduleStates){
+    private void setSwerveModuleState(SwerveModuleState[] moduleStates){
         for(int module = 0; module < 4; module++){
             SwerveModuleState moduleState = moduleStates[module];
 
-            double targetAngle = moduleState.angle.getDegrees() % 360.0;
-            double speed = moduleState.speedMetersPerSecond; //already converted to range of -1.0 to 1.0 with SwerveDriveKinematics.desaturateWheelSpeeds();
+            targetAngle = moduleState.angle.getDegrees() % 360.0;
+            targetSpeed = moduleState.speedMetersPerSecond; //already converted to range of -1.0 to 1.0 with SwerveDriveKinematics.desaturateWheelSpeeds();
             
-            driveTrain.setOneModuleDrivePower(module, speed);
+            driveTrain.setOneModuleDrivePower(module, targetSpeed);
             driveTrain.setOneModuleWheelRotation(module, targetAngle);
         }
     }
@@ -145,13 +155,17 @@ public class CatzAutonomous extends AbstractMechanism{
 
     @Override
     public void smartDashboard() {
-        // TODO Auto-generated method stub
-        
+        SmartDashboard.putNumber("Auton Target Speed", targetSpeed);
+        SmartDashboard.putNumber("Auton Target Angle", targetAngle);
     }
 
     @Override
     public void smartDashboard_DEBUG() {
-        // TODO Auto-generated method stub
-        
+        if(currentTrajectory != null){
+            SmartDashboard.putNumber("Trajectory Total Time", currentTrajectory.getTotalTimeSeconds());
+        }
+        SmartDashboard.putNumber("VxMetersPerSecond", vxMetersPerSecond);
+        SmartDashboard.putNumber("VyMetersPerSecond", vyMetersPerSecond);
+        SmartDashboard.putNumber("OmegaAngleMetersPerSecond", Math.toDegrees(omegaRadiansPerSecond));
     }
 }
