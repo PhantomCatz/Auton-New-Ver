@@ -42,7 +42,7 @@ public class Robot extends TimedRobot {
   
   private final int XBOX_DRV_PORT = 0;
 
-  private final CatzAutonomous drive = CatzAutonomous.getAutonomousinstance();
+  private final CatzAutonomous autonDrive = CatzAutonomous.getAutonomousInstance();
   private final CatzRobotTracker robotTracker = CatzRobotTracker.getRobotTrackerInstance();
 
   @Override
@@ -61,11 +61,11 @@ public class Robot extends TimedRobot {
       AutonomousContainer.getInstance().initialize(
                 true,
                 new CommandTranslator(
-                        drive::setAutoPath,
-                        drive::stopMovement,
-                        drive::setAutoRotation,
-                        drive::isFinished,
-                        drive::getAutoElapsedTime,
+                        autonDrive::setAutoPath,
+                        autonDrive::stopMovement,
+                        autonDrive::setAutoRotation,
+                        autonDrive::isFinished,
+                        autonDrive::getAutoElapsedTime,
                         robotTracker::resetPosition,
                         true
                 ),
@@ -87,7 +87,10 @@ public class Robot extends TimedRobot {
   {
     driveTrain.updateShuffleboard();
 
-    CatzAutonomous.getAutonomousinstance().updateShuffleboard();
+    CatzAutonomous.getAutonomousInstance().updateShuffleboard();
+
+    autonDrive.smartDashboard();
+    autonDrive.smartDashboard_DEBUG();
     
     //SmartDashboard.putNumber("NavX", navX.getAngle());
     //drivetrain.testAngle();
@@ -192,7 +195,7 @@ public class Robot extends TimedRobot {
 
   private void startThread(){
     CatzRobotTracker.getRobotTrackerInstance().start();
-    CatzAutonomous.getAutonomousinstance().start();
+    CatzAutonomous.getAutonomousInstance().start();
   }
 
   public static DataCollection getDataCollection(){

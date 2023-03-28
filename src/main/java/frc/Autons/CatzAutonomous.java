@@ -145,7 +145,7 @@ public class CatzAutonomous extends AbstractMechanism{
         }
     }
 
-    public static CatzAutonomous getAutonomousinstance(){
+    public static CatzAutonomous getAutonomousInstance(){
         return autonomousInstance;
     }
 

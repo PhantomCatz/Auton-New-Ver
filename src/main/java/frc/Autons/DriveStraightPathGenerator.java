@@ -29,6 +29,7 @@ public class DriveStraightPathGenerator {
             new Pose2d(distanceToTravel, 0, new Rotation2d(0)),
 
             config
+
         );
         
     }   
