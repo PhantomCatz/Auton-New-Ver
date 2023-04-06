@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+      startThread();
       driveTrain = CatzDrivetrain.getDrivetrainInstance();
       xboxDrv = new XboxController(XBOX_DRV_PORT);
 
@@ -100,6 +101,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit()
   {
+    autonDrive.kill();
     currentTime.reset();
     currentTime.start();
 

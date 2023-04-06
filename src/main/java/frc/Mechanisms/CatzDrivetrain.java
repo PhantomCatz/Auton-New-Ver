@@ -65,8 +65,8 @@ public class CatzDrivetrain
         RT_BACK_MODULE = new CatzSwerveModule(RT_BACK_DRIVE_ID, RT_BACK_STEER_ID, RT_BACK_ENC_PORT, RT_BACK_OFFSET);
 
         swerveModules[0] = LT_FRNT_MODULE;
-        swerveModules[1] = LT_BACK_MODULE;
-        swerveModules[2] = RT_FRNT_MODULE;
+        swerveModules[2] = LT_BACK_MODULE;
+        swerveModules[1] = RT_FRNT_MODULE;
         swerveModules[3] = RT_BACK_MODULE;
 
         navX = new AHRS();

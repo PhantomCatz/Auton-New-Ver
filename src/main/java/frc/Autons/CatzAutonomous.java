@@ -123,7 +123,9 @@ public class CatzAutonomous extends AbstractMechanism{
 
             targetAngle = moduleState.angle.getDegrees() % 360.0;
             targetSpeed = moduleState.speedMetersPerSecond; //already converted to range of -1.0 to 1.0 with SwerveDriveKinematics.desaturateWheelSpeeds();
-            
+
+            targetSpeed *= -0.2;
+
             driveTrain.setOneModuleDrivePower(module, targetSpeed);
             driveTrain.setOneModuleWheelRotation(module, targetAngle);
         }

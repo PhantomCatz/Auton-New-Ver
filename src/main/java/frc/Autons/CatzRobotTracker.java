@@ -32,8 +32,8 @@ public class CatzRobotTracker extends AbstractMechanism{
             CatzAutonomous.getSwervedrivekinematics(), Rotation2d.fromDegrees(driveTrain.getGyroAngle()),
             new SwerveModulePosition[] {
                 getModulePosition(driveTrain.LT_FRNT_MODULE),
-                getModulePosition(driveTrain.LT_BACK_MODULE),
                 getModulePosition(driveTrain.RT_FRNT_MODULE),
+                getModulePosition(driveTrain.LT_BACK_MODULE),
                 getModulePosition(driveTrain.RT_BACK_MODULE)
             }, new Pose2d());
     }
