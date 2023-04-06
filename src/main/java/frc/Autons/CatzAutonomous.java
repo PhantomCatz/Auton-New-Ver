@@ -33,9 +33,11 @@ public class CatzAutonomous extends AbstractMechanism{
         CatzConstants.SWERVE_RIGHT_BACK_LOCATION
     );
 
+    private ChassisSpeeds nullChassisSpeeds = new ChassisSpeeds(0,0,0);
+    private SwerveModuleState[] nullModuleStates = swerveDriveKinematics.toSwerveModuleStates(nullChassisSpeeds);
 
-    private Trajectory currentTrajectory;
-    private Rotation2d targetRotation;
+    private volatile Trajectory currentTrajectory;
+    private volatile Rotation2d targetRotation;
 
     private double autoStartTime;
 
@@ -78,10 +80,12 @@ public class CatzAutonomous extends AbstractMechanism{
     }
 
     public void stopMovement() {
+        setSwerveModuleState(nullModuleStates);
+
         isDone = true;
     }
 
-    synchronized public boolean isFinished() {
+    public boolean isFinished() {
         return isDone;
     }
 
@@ -93,7 +97,7 @@ public class CatzAutonomous extends AbstractMechanism{
 
     private void runAuto(){
 
-        if(currentTrajectory == null || targetRotation == null) System.out.println("Trajectory or target rotation is null");
+        if(currentTrajectory == null || targetRotation == null) return;
 
         Pose2d currentPos = CatzRobotTracker.getRobotTrackerInstance().getCurrentEstimatedPose();
 
