@@ -27,8 +27,11 @@ public abstract class AbstractMechanism implements Runnable {
     public abstract void smartDashboard();
     public abstract void smartDashboard_DEBUG();
 
+    public void threadInit(){}
+
     @Override
     public void run() {
+        threadInit();
         while(runThread == true){
             update();
             try{

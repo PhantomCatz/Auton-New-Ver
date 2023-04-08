@@ -14,6 +14,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.Mechanisms.CatzDrivetrain;
+import frc.Utils.CatzMathUtils;
 import frc.robot.CatzConstants;
 
 
@@ -33,15 +34,12 @@ public class CatzAutonomous extends AbstractMechanism{
         CatzConstants.SWERVE_RIGHT_BACK_LOCATION
     );
 
-    private ChassisSpeeds nullChassisSpeeds = new ChassisSpeeds(0,0,0);
-    private SwerveModuleState[] nullModuleStates = swerveDriveKinematics.toSwerveModuleStates(nullChassisSpeeds);
-
     private volatile Trajectory currentTrajectory;
     private volatile Rotation2d targetRotation;
 
     private double autoStartTime;
 
-    private boolean isDone = false;
+    private volatile boolean isDone = false;
 
     private static int TRAJECTORY_FOLLOWER_THREAD_PERIOD_MS = 20;
 
@@ -70,18 +68,18 @@ public class CatzAutonomous extends AbstractMechanism{
 
     //Methods used in the CommandTranslator starts here. --------------------------------
     public void setAutoPath(Trajectory trajectory) {
+        isDone = false;
         this.currentTrajectory = trajectory;
         
         autoStartTime = Timer.getFPGATimestamp();
     }
 
     public void setAutoRotation(Rotation2d rotation) {
+        isDone = false;
         this.targetRotation = rotation;
     }
 
     public void stopMovement() {
-        setSwerveModuleState(nullModuleStates);
-
         isDone = true;
     }
 
@@ -97,41 +95,50 @@ public class CatzAutonomous extends AbstractMechanism{
 
     private void runAuto(){
 
-        if(currentTrajectory == null || targetRotation == null) return;
+        try{
+            Pose2d currentPos = CatzRobotTracker.getRobotTrackerInstance().getCurrentEstimatedPose();
+    
+            Trajectory.State goal = currentTrajectory.sample(Timer.getFPGATimestamp() - autoStartTime);
+            ChassisSpeeds adjustedSpeed = holonomicDriveController.calculate(currentPos, goal, targetRotation); 
+    
+            vxMetersPerSecond     = adjustedSpeed.vxMetersPerSecond;
+            vyMetersPerSecond     = adjustedSpeed.vyMetersPerSecond;
+            omegaRadiansPerSecond = adjustedSpeed.omegaRadiansPerSecond;
 
-        Pose2d currentPos = CatzRobotTracker.getRobotTrackerInstance().getCurrentEstimatedPose();
-
-        Trajectory.State goal = currentTrajectory.sample(Timer.getFPGATimestamp() - autoStartTime);
-        ChassisSpeeds adjustedSpeed = holonomicDriveController.calculate(currentPos, goal, targetRotation); 
-
-        vxMetersPerSecond     = adjustedSpeed.vxMetersPerSecond;
-        vyMetersPerSecond     = adjustedSpeed.vyMetersPerSecond;
-        omegaRadiansPerSecond = adjustedSpeed.omegaRadiansPerSecond;
-
-        SwerveModuleState[] swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(adjustedSpeed);
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND);
-
-        setSwerveModuleState(swerveModuleStates);
-
-        //Checking if the robot has reached the destination and if the current time has reached the predicted finishing time.
-        if((holonomicDriveController.atReference()) && ((Timer.getFPGATimestamp() - autoStartTime) >= currentTrajectory.getTotalTimeSeconds())){
-            isDone = true;
-        }
-
-        
+            boolean rotate = adjustedSpeed.vxMetersPerSecond != 0 ||
+                adjustedSpeed.vyMetersPerSecond != 0 ||
+                adjustedSpeed.omegaRadiansPerSecond != 0;
+    
+            SwerveModuleState[] swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(adjustedSpeed);
+            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, CatzConstants.MAX_AUTON_SPEED_METERS_PER_SECOND);
+    
+            setSwerveModuleState(swerveModuleStates, rotate);
+    
+            //Checking if the robot has reached the destination and if the current time has reached the predicted finishing time.
+            if((holonomicDriveController.atReference()) && ((Timer.getFPGATimestamp() - autoStartTime) >= currentTrajectory.getTotalTimeSeconds())){
+                isDone = true;
+            }
+        }catch(NullPointerException e){}     
     }
 
-    private void setSwerveModuleState(SwerveModuleState[] moduleStates){
+    private void setSwerveModuleState(SwerveModuleState[] moduleStates, boolean rotate){
         for(int module = 0; module < 4; module++){
             SwerveModuleState moduleState = moduleStates[module];
 
             targetAngle = moduleState.angle.getDegrees() % 360.0;
             targetSpeed = moduleState.speedMetersPerSecond; //already converted to range of -1.0 to 1.0 with SwerveDriveKinematics.desaturateWheelSpeeds();
 
+            double currentAngle = driveTrain.getOneWheelAngle(module);
+            double angleDiff    = CatzMathUtils.getAngleDiff(targetAngle, currentAngle);
+
             targetSpeed *= -0.2;
 
+            if(Math.abs(angleDiff) > 0.1 && rotate)
+            {
+                driveTrain.setOneModuleWheelRotation(module, targetAngle);
+            }
+
             driveTrain.setOneModuleDrivePower(module, targetSpeed);
-            driveTrain.setOneModuleWheelRotation(module, targetAngle);
         }
     }
 
@@ -143,11 +150,14 @@ public class CatzAutonomous extends AbstractMechanism{
     
     @Override
     public void update(){
-        if(isDone){
-            driveTrain.setDrivePower(0);
-        }
-        else{
+        if(!isDone){
             runAuto();
+        }
+        else
+        {
+            ChassisSpeeds nullChassisSpeeds = new ChassisSpeeds(0,0,0);
+            SwerveModuleState[] nullModuleStates = swerveDriveKinematics.toSwerveModuleStates(nullChassisSpeeds);
+            setSwerveModuleState(nullModuleStates, false);
         }
     }
 

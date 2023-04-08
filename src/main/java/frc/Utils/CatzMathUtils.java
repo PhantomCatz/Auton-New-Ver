@@ -41,4 +41,15 @@ public class CatzMathUtils {
       return (Math.sqrt(Math.pow(xJoy, 2) + Math.pow(yJoy, 2)));
     }
 
+    public static double getAngleDiff(double targetAngle, double currentAngle) {
+        double angleDiff = targetAngle - currentAngle;
+        if (angleDiff > 180) {
+            angleDiff -= 360;
+        }
+
+        if (angleDiff < -180) {
+            angleDiff += 360;
+        }
+        return angleDiff;
+    }
 }

@@ -171,7 +171,7 @@ public class CatzSwerveModule
     
     public double getAngle()
     {
-        return currentAngle;
+        return ((magEnc.get() - wheelOffset) * 360.0);
     }
 
     public double getError()

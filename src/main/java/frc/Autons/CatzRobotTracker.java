@@ -47,8 +47,8 @@ public class CatzRobotTracker extends AbstractMechanism{
     public void resetPosition(Pose2d pose){
         swerveOdometry.resetPosition(Rotation2d.fromDegrees(driveTrain.getGyroAngle()), new SwerveModulePosition[] {
             getModulePosition(driveTrain.LT_FRNT_MODULE),
-            getModulePosition(driveTrain.LT_BACK_MODULE),
             getModulePosition(driveTrain.RT_FRNT_MODULE),
+            getModulePosition(driveTrain.LT_BACK_MODULE),
             getModulePosition(driveTrain.RT_BACK_MODULE)
         }, pose);
     }
@@ -60,8 +60,8 @@ public class CatzRobotTracker extends AbstractMechanism{
     private void updateRobotPosition(){
         swerveOdometry.update(Rotation2d.fromDegrees(driveTrain.getGyroAngle()), new SwerveModulePosition[] {
             getModulePosition(driveTrain.LT_FRNT_MODULE),
-            getModulePosition(driveTrain.LT_BACK_MODULE),
             getModulePosition(driveTrain.RT_FRNT_MODULE),
+            getModulePosition(driveTrain.LT_BACK_MODULE),
             getModulePosition(driveTrain.RT_BACK_MODULE)
         });
         
